@@ -10,10 +10,5 @@ module.exports = {
         port: process.env.DATABASE_PORT,
         user: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD
-    },
-    pool: {
-        min: parseInt(process.env.DATABASE_POOL_MIN),
-        max: parseInt(process.env.DATABASE_POOL_MAX),
-        refreshIdle: false
     }
 }
