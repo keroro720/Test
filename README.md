@@ -19,7 +19,7 @@ under folder ```/src```
 ## Getting start
 - build docker image of the app using
 ``` docker build . --tag parking-server ```
-- run the docker compose 
+- run the docker compose
 ``` docker-compose up ```
 
 ## Run locally
@@ -32,6 +32,6 @@ under folder ```/src```
 - the unit test script inside ```/src/unit```
 
 For Unit test run the command below
-``` 
+```
 yarn test
 ```

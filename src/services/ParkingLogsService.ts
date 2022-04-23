@@ -15,7 +15,7 @@ export class ParkingLogsService {
     }
 
     public async getLogsByPlateId(plateId: string) {
-        return this._parkingLogRepository?.getLogByPlateId(plateId);
+        return this._parkingLogRepository?.getLogByCarId(plateId);
     }
 
     public async getLogsBySlotId(slotId: string) {
