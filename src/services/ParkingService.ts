@@ -18,8 +18,6 @@ export class ParkingService {
     @Inject(()=> ParkingLotRepository)
     private _parkingLotRepository!: ParkingLotRepository;
 
-    private parkingLots: IParkingLot[] = [];
-
     public async parkingACar(
         plate_id: string,
         size: ParkingSize
