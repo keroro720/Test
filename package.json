@@ -36,21 +36,9 @@
     "tsconfig-paths": "^3.14.1"
   },
   "scripts": {
+    "lint": "tslint ./**/*.ts",
     "build": "tsc -p .",
     "dev": "ts-node-dev --respawn src/index.ts",
     "test": "mocha -r tsconfig-paths/register -r ts-node/register \"test/unit/services/**/*.Spec.ts\""
-  },
-  "mocha": {
-    "require": [
-      "ts-node/register",
-      "tsconfig-paths/register",
-      "source-map-support/register"
-    ],
-    "extensions": [
-      "ts"
-    ],
-    "watch-files": [
-      "test/unit/**/*.Spec.ts"
-    ]
   }
 }

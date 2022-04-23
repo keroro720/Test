@@ -1,4 +1,4 @@
-import { RegisterCarTest } from "./CarServiceTest/CarService.test";
+import { RegisterCarTest } from "./CarServiceTest/RegisterCar.test";
 
 describe("carservice", () => {
     RegisterCarTest();

@@ -1,4 +1,4 @@
-import { suite, test } from "@testdeck/mocha"
+import { suite, test } from "@testdeck/mocha";
 import { CarRepository } from "src/repositories/CarRepository";
 import Container from "typedi";
 import { MockCarRepository } from "../../repositories/MockCarRepository";
@@ -14,7 +14,7 @@ import { ParkingService } from "src/services/ParkingService";
 
 export const ParkingCarTest = () => {
     @suite("parking a car")
-    class RegisterCarTest {
+    class ParkingACar {
         public before() {
             chai.should();
             chai.use(chaiAsPromised);
@@ -31,8 +31,8 @@ export const ParkingCarTest = () => {
             const response = await parkingService.parkingACar(
                 "AU1234",
                 ParkingSize.MEDIUM
-            )
-            expect(response).equal('Your parking lot is 5678')
+            );
+            expect(response).equal('Your parking lot is 5678');
         }
         @test("can't park a car while your car is parking")
         public async canNotParkACarWhileCarIsParking() {
@@ -40,7 +40,7 @@ export const ParkingCarTest = () => {
             await parkingService.parkingACar(
                 "AU91011",
                 ParkingSize.MEDIUM
-            ).should.rejected
+            ).should.rejected;
         }
     }
-}
+};

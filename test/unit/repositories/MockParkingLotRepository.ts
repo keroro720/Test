@@ -1,7 +1,7 @@
-import * as _ from "lodash"
-import { Service } from "typedi"
-import { IParkingLot, ParkingSize } from "../../../src/type/ParkingLot"
-import { IParkingLotRepository } from "../../../src/repositories/types/IParkingLotRepository"
+import * as _ from "lodash";
+import { Service } from "typedi";
+import { IParkingLot, ParkingSize } from "../../../src/type/ParkingLot";
+import { IParkingLotRepository } from "../../../src/repositories/types/IParkingLotRepository";
 
 @Service()
 export class MockParkingLotRepository implements IParkingLotRepository {
@@ -24,12 +24,12 @@ export class MockParkingLotRepository implements IParkingLotRepository {
             size: ParkingSize.LARGE,
             position: 2
         }
-    ]
+    ];
 
     public async getParkingLotById (id: string) {
         const result = this.parkinglots.find(parkinglot => {
-            return parkinglot.slot_id === id
-        })
+            return parkinglot.slot_id === id;
+        });
         return result!;
     }
 
@@ -37,59 +37,59 @@ export class MockParkingLotRepository implements IParkingLotRepository {
         if (_.isEmpty(this.parkinglots)) {
             return 0;
         }
-        const response = _.sortBy(this.parkinglots, "position")
+        const response = _.sortBy(this.parkinglots, "position");
         return response[response.length - 1].position + 1;
     }
 
    public async getAll () {
-       return this.parkinglots
+       return this.parkinglots;
    }
 
    public async addParkingLot (data: IParkingLot[]) {
        this.parkinglots = _.concat(this.parkinglots, data);
-   };
+   }
 
    public async parkingCarById(
        id: string,
        car_id: string
    ) {
         const index = this.parkinglots.findIndex(parkinglot => {
-            return parkinglot.slot_id === id
-        })
-        this.parkinglots[index].car_id = car_id
+            return parkinglot.slot_id === id;
+        });
+        this.parkinglots[index].car_id = car_id;
    }
 
    public async emptySlotByCarId(
     car_id: string
    ) {
     const index = this.parkinglots.findIndex(parkinglot => {
-        return parkinglot.car_id === car_id
-    })
-    this.parkinglots[index].car_id = null
+        return parkinglot.car_id === car_id;
+    });
+    this.parkinglots[index].car_id = null;
    }
 
    public async getParkingLotByCarId(
        car_id: string
    ) {
     const index = this.parkinglots.findIndex(parkinglot => {
-        return parkinglot.car_id === car_id
-    })
-    return this.parkinglots[index]
+        return parkinglot.car_id === car_id;
+    });
+    return this.parkinglots[index];
    }
 
    public async getNearestAvailableParkinglotBySize(
        size: ParkingSize
    ) {
-    const sorted = _.sortBy(this.parkinglots, "position")
+    const sorted = _.sortBy(this.parkinglots, "position");
     const availableParkingSize: ParkingSize[] = [ParkingSize.LARGE];
     if (size === ParkingSize.SMALL) {
-        availableParkingSize.push(ParkingSize.SMALL, ParkingSize.MEDIUM)
+        availableParkingSize.push(ParkingSize.SMALL, ParkingSize.MEDIUM);
     } else if (size === ParkingSize.MEDIUM) {
-        availableParkingSize.push(ParkingSize.MEDIUM)
+        availableParkingSize.push(ParkingSize.MEDIUM);
     }
     const nearest = sorted.find(each => {
-        return !each.car_id && _.includes(availableParkingSize, each.size)
-    })
-    return nearest
+        return !each.car_id && _.includes(availableParkingSize, each.size);
+    });
+    return nearest;
    }
 }
