@@ -1,4 +1,4 @@
-import { IParkingLog } from "../../entities/ParkingLog";
+import { IParkingLog } from "../../type/ParkingLog";
 
 export interface IParkingLogRepository {
     getAllLog: () => Promise<IParkingLog[]>
@@ -6,4 +6,5 @@ export interface IParkingLogRepository {
     editLeavingTimeById: (id: string, leavingTime: number) => Promise<void>
     getLogByPlateId: (plate_id: string) => Promise<IParkingLog[]>
     getLogBySlotId: (slot_id: string) => Promise<IParkingLog[]>
+    getLastestLogByCarIdAndPlateId: (car_id: string, slot_id: string) => Promise<IParkingLog>
 }

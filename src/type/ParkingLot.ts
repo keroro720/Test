@@ -1,7 +1,7 @@
 export interface IParkingLot {
-    parkinglot_id: string;
+    slot_id: string;
     car_id?: string | null;
-    size: number;
+    size: ParkingSize;
     position: number;
 }
 

@@ -1,15 +1,34 @@
 import * as _ from "lodash"
 import { Service } from "typedi"
-import { IParkingLot } from "../../../src/entities/ParkingLot"
+import { IParkingLot, ParkingSize } from "../../../src/type/ParkingLot"
 import { IParkingLotRepository } from "../../../src/repositories/types/IParkingLotRepository"
 
 @Service()
 export class MockParkingLotRepository implements IParkingLotRepository {
-    private parkinglots:IParkingLot[] = []
+    private parkinglots:IParkingLot[] = [
+        {
+            slot_id: "1234",
+            car_id: null,
+            size: ParkingSize.SMALL,
+            position: 0
+        },
+        {
+            slot_id: "5678",
+            car_id: null,
+            size: ParkingSize.MEDIUM,
+            position: 1
+        },
+        {
+            slot_id: "9101112",
+            car_id: "AU91011",
+            size: ParkingSize.LARGE,
+            position: 2
+        }
+    ]
 
     public async getParkingLotById (id: string) {
         const result = this.parkinglots.find(parkinglot => {
-            return parkinglot.parkinglot_id === id
+            return parkinglot.slot_id === id
         })
         return result!;
     }
@@ -35,12 +54,12 @@ export class MockParkingLotRepository implements IParkingLotRepository {
        car_id: string
    ) {
         const index = this.parkinglots.findIndex(parkinglot => {
-            return parkinglot.parkinglot_id === id
+            return parkinglot.slot_id === id
         })
         this.parkinglots[index].car_id = car_id
    }
 
-   public async emptyCarByCarId(
+   public async emptySlotByCarId(
     car_id: string
    ) {
     const index = this.parkinglots.findIndex(parkinglot => {
@@ -59,11 +78,17 @@ export class MockParkingLotRepository implements IParkingLotRepository {
    }
 
    public async getNearestAvailableParkinglotBySize(
-       size: number
+       size: ParkingSize
    ) {
     const sorted = _.sortBy(this.parkinglots, "position")
+    const availableParkingSize: ParkingSize[] = [ParkingSize.LARGE];
+    if (size === ParkingSize.SMALL) {
+        availableParkingSize.push(ParkingSize.SMALL, ParkingSize.MEDIUM)
+    } else if (size === ParkingSize.MEDIUM) {
+        availableParkingSize.push(ParkingSize.MEDIUM)
+    }
     const nearest = sorted.find(each => {
-        return !each.car_id && each.size >= size
+        return !each.car_id && _.includes(availableParkingSize, each.size)
     })
     return nearest
    }

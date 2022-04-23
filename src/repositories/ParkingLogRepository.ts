@@ -1,52 +1,58 @@
-import { IParkingLog } from "../entities/ParkingLog";
+import { IParkingLog } from "../type/ParkingLog";
 import { IParkingLogRepository } from "./types/IParkingLogRepository";
 import { Service } from "typedi"
-
+import { database } from "../../src";
 @Service()
 export class ParkingLogRepository implements IParkingLogRepository {
 
-    private parkingLogs:IParkingLog[] = []
+    private table_name = "parkinglog"
+
+    private queryBuilder() {
+        const client = database(this.table_name)
+        return client
+    }
 
     public async getAllLog () {
-        return this.parkingLogs
+        const client = this.queryBuilder()
+        const response = await client.select();
+        return response;
     };
 
     public async addLog (data: IParkingLog) {
-        this.parkingLogs.push({
-            ...data
-        })
+        const client = this.queryBuilder()
+        await client.insert(data);
     }
 
     public async editLeavingTimeById(
         id: string,
         time: number
     ) {
-        const index = this.parkingLogs.findIndex(parkingLog => {
-            return parkingLog.id === id
-        })
-        this.parkingLogs[index].leaving_time = time
+        const client = this.queryBuilder()
+        await client.update({leaving_time: time}).where({id});
     }
 
     public async getLogByPlateId(
         plate_id: string
     ) {
-       return this.parkingLogs.filter((parkinglog => {parkinglog.car_id === plate_id}));
+        const client = this.queryBuilder()
+        const response = await client.select().where({plate_id});
+        return response;
     }
 
     public async getLogBySlotId(
         slot_id: string
     ) {
-        console.log(this.parkingLogs)
-        console.log(slot_id)
-       return this.parkingLogs.filter((parkinglog => {parkinglog.parkinglot_id === slot_id}));
+        const client = this.queryBuilder()
+        const response = await client.select().where({slot_id});
+        return response;
     }
 
     public async getLastestLogByCarIdAndPlateId(
         car_id: string,
-        parking_id: string
+        slot_id: string
     ) {
-        return this.parkingLogs.find(each => {
-            return each.car_id === car_id && each.parkinglot_id === parking_id && !each.leaving_time
-        })
+        const client = this.queryBuilder()
+        const response = await client.select().where({car_id}).andWhere({slot_id}).andWhere({leaving_time: null}).orderBy("entering_time", "desc").first();
+        return response;
     }
 }

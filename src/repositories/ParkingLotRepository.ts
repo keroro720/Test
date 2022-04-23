@@ -1,71 +1,83 @@
-import { IParkingLot } from "../entities/ParkingLot";
+import { IParkingLot, ParkingSize } from "../type/ParkingLot";
 import { IParkingLotRepository } from "./types/IParkingLotRepository";
 import * as _ from "lodash"
 import { Service } from "typedi"
+import { database } from "../../src";
 
 @Service()
 export class ParkingLotRepository implements IParkingLotRepository {
 
-    private parkinglots:IParkingLot[] = []
+    private table_name = "parkinglot"
+
+    private queryBuilder() {
+        const client = database(this.table_name)
+        return client
+    }
 
     public async getParkingLotById (id: string) {
-        const result = this.parkinglots.find(parkinglot => {
-            return parkinglot.parkinglot_id === id
-        })
-        return result!;
+        const client = this.queryBuilder();
+        const response = await client.select().where("slot_id", id).first()
+        return response;
     }
 
     public async getFarestPosition() {
-        if (_.isEmpty(this.parkinglots)) {
+        const client = this.queryBuilder();
+        const response = await client.select().orderBy("position")
+        if (_.isEmpty(response)) {
             return 0;
         }
-        const response = _.sortBy(this.parkinglots, "position")
         return response[response.length - 1].position + 1;
     }
 
    public async getAll () {
-       return this.parkinglots
+       const client = this.queryBuilder();
+       const response = await client.select()
+       return response
    }
 
    public async addParkingLot (data: IParkingLot[]) {
-       this.parkinglots = _.concat(this.parkinglots, data);
+        const client = this.queryBuilder();
+        await client.insert(data);
    };
 
    public async parkingCarById(
-       id: string,
+       slot_id: string,
        car_id: string
    ) {
-        const index = this.parkinglots.findIndex(parkinglot => {
-            return parkinglot.parkinglot_id === id
-        })
-        this.parkinglots[index].car_id = car_id
+        const client = this.queryBuilder();
+        await client.update({car_id}).where({slot_id})
    }
 
-   public async emptyCarByCarId(
+   public async emptySlotByCarId(
     car_id: string
    ) {
-    const index = this.parkinglots.findIndex(parkinglot => {
-        return parkinglot.car_id === car_id
-    })
-    this.parkinglots[index].car_id = null
+       const update = {
+           car_id: null
+       }
+        const client = this.queryBuilder();
+        await client.update(update).where({car_id})
    }
 
    public async getParkingLotByCarId(
        car_id: string
    ) {
-    const index = this.parkinglots.findIndex(parkinglot => {
-        return parkinglot.car_id === car_id
-    })
-    return this.parkinglots[index]
+        const client = this.queryBuilder();
+        const response = await client.select().where({car_id}).first()
+        return response;
    }
 
    public async getNearestAvailableParkinglotBySize(
-       size: number
+       size: ParkingSize
    ) {
-    const sorted = _.sortBy(this.parkinglots, "position")
-    const nearest = sorted.find(each => {
-        return !each.car_id && each.size >= size
-    })
-    return nearest
+    const availableParkingSize: ParkingSize[] = [ParkingSize.LARGE];
+    if (size === ParkingSize.SMALL) {
+        availableParkingSize.push(ParkingSize.SMALL, ParkingSize.MEDIUM)
+    } else if (size === ParkingSize.MEDIUM) {
+        availableParkingSize.push(ParkingSize.MEDIUM)
+    }
+    const client = this.queryBuilder();
+    const response = await client.select().whereIn("size", availableParkingSize).orderBy("position").first()
+    return response
+
    }
 }

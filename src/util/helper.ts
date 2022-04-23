@@ -1,4 +1,4 @@
-import { ParkingSize } from "../entities/ParkingLot";
+import { ParkingSize } from "../type/ParkingLot";
 
 export function mappingSize(size: ParkingSize) {
     return size === ParkingSize.SMALL ? 1 : size === ParkingSize.MEDIUM ? 2 : 3

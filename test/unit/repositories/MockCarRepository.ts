@@ -1,11 +1,17 @@
+import { ParkingSize } from "src/type/ParkingLot";
 import { Service } from "typedi"
-import { ICar } from "../../../src/entities/Car";
+import { ICar } from "../../../src/type/Car";
 import { ICarRepository } from "../../../src/repositories/types/ICarRepository";
 
 @Service()
 export class MockCarRepository implements ICarRepository {
 
-    private cars:ICar[] = []
+    private cars:ICar[] = [
+        {
+            plate_id: "AU123",
+            size: ParkingSize.MEDIUM
+        }
+    ]
 
     public async getCarById (plate_id: string): Promise<ICar> {
         const result = this.cars.find(car => {
@@ -14,11 +20,11 @@ export class MockCarRepository implements ICarRepository {
         return result!;
     }
 
-    public async getCarsBySize (size: number) {
+    public async getCarsBySize (size: ParkingSize) {
         const result = this.cars.filter(car => {
             return car.size === size
         })
-        return result!;   
+        return result;
     };
 
     public async getAll() {

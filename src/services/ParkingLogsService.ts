@@ -1,10 +1,6 @@
 import * as _ from "lodash";
-import { IParkingLot, ParkingSize } from "../entities/ParkingLot";
 import { uuid } from 'uuidv4';
 import dayjs from "dayjs";
-import { IParkingLog } from "../entities/ParkingLog";
-import { mappingSize } from "../util/helper";
-import { ICar } from "../entities/Car";
 import { Service, Inject } from "typedi"
 import { ParkingLogRepository } from "../repositories/ParkingLogRepository";
 
@@ -28,26 +24,26 @@ export class ParkingLogsService {
     }
 
     public async addEnteringLog(
-        parkinglot_id: string,
+        slot_id: string,
         car_id: string
     ) {
         await this._parkingLogRepository?.addLog({
-            id: uuid(), 
-            parkinglot_id,
+            id: uuid(),
+            slot_id,
             car_id,
-            entering_time: dayjs().unix()
+            entering_time: dayjs().unix(),
+            leaving_time: null
         })
 
     }
 
     public async addLeavingTime(
         car_id: string,
-        parkinglot_id: string
+        slot_id: string
     ) {
-        const response = await this._parkingLogRepository?.getLastestLogByCarIdAndPlateId(car_id, parkinglot_id)
+        const response = await this._parkingLogRepository?.getLastestLogByCarIdAndPlateId(car_id, slot_id)
         if (response) {
             await this._parkingLogRepository?.editLeavingTimeById(response?.id, dayjs().unix())
         }
     }
-   
 }

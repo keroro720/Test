@@ -1,0 +1,6 @@
+--harmonic
+--require source-map-support/register
+-r ts-node/register
+-r tsconfig-paths/register
+--exit
+./test/unit/**/*.Spec.ts

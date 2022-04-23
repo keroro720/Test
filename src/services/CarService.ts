@@ -1,8 +1,8 @@
 import * as _ from "lodash";
-import { ParkingSize } from "../entities/ParkingLot";
-import { mappingSize, mappingSizeByNumber } from "../util/helper";
+import { ParkingSize } from "../type/ParkingLot";
 import { Service, Inject } from "typedi"
 import { CarRepository } from "../repositories/CarRepository";
+import e from "express";
 
 @Service()
 export class CarService {
@@ -11,21 +11,31 @@ export class CarService {
     private _carRepository!: CarRepository
 
     public async getAll() {
-        const response = await this._carRepository?.getAll();
-        return response.map(car => {
-            return {
-                ...car,
-                size: mappingSizeByNumber(car.size)
+        try {
+            const response = await this._carRepository?.getAll();
+            return response;
+        } catch (error) {
+            console.log("Error: ", error);
+            throw {
+                status: 500,
+                message: "Internal Server Error"
             }
-        })
+        }
     }
 
     public async getCarPlateListBySize(size: ParkingSize) {
-        const sizeNumber = mappingSize(size)
-        const response = await this._carRepository?.getCarsBySize(sizeNumber)
+        try {
+        const response = await this._carRepository?.getCarsBySize(size)
         return response.map(car => {
             return car.plate_id
         })
+        } catch (error) {
+            console.log("Error: ", error);
+            throw {
+                status: 500,
+                message: "Internal Server Error"
+            }
+        }
     }
 
     public async getCarById(
@@ -39,26 +49,39 @@ export class CarService {
         plate_id: string,
         size: ParkingSize
     ) {
-        const carById = await this.getCarById(plate_id)
-        const sizeNumber = mappingSize(size)
-        if (!carById) {
-            await this._carRepository?.addCar({plate_id, size: sizeNumber})
-            return {
-                plate_id,
-                size
-            }
-        } else {
-            if (carById.size === sizeNumber) {
-                throw {
-                    status: 409,
-                    message: "Car is already register"
+        try {
+            const carById = await this.getCarById(plate_id)
+            if (!carById) {
+                await this._carRepository?.addCar({plate_id, size})
+                return {
+                    plate_id,
+                    size
+                }
+            } else {
+                if (carById.size !== size) {
+                    throw {
+                        status: 409,
+                        message: "Car is already register"
+                    }
+                }
+                return {
+                    plate_id,
+                    size
                 }
             }
-            return {
-                plate_id,
-                size
+        } catch (error) {
+            console.log("Error: ", error);
+            if (error.status !== 409) {
+                throw {
+                    status: 500,
+                    message: "Internal Server Error"
+                }
+            } else {
+                throw {
+                    status: error.status,
+                    message: error.message
+                }
             }
-        } 
+        }
     }
-   
 }

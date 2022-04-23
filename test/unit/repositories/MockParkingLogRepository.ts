@@ -1,9 +1,10 @@
 import { Service } from "typedi"
-import { IParkingLog } from "../../../src/entities/ParkingLog"
+import { IParkingLog } from "../../../src/type/ParkingLog"
 import { IParkingLogRepository } from "../../../src/repositories/types/IParkingLogRepository"
+import * as _ from "lodash"
 
 @Service()
-export class MockParkingLogsRepository implements IParkingLogRepository {
+export class MockParkingLogRepository implements IParkingLogRepository {
 
     private parkingLogs:IParkingLog[] = []
 
@@ -36,6 +37,15 @@ export class MockParkingLogsRepository implements IParkingLogRepository {
     public async getLogBySlotId(
         slot_id: string
     ) {
-       return this.parkingLogs.filter((parkinglog => {parkinglog.parkinglot_id === slot_id}));
+       return this.parkingLogs.filter((parkinglog => {parkinglog.slot_id === slot_id}));
+    }
+
+    public async getLastestLogByCarIdAndPlateId(
+        car_id: string,
+        slot_id: string
+    ) {
+        return _.sortBy(this.parkingLogs, "entering_time").find(each => {
+            return each.car_id === car_id && each.slot_id === slot_id && !each.leaving_time
+        })
     }
 }

@@ -1,8 +1,8 @@
-{
-    "extends": "tslint:recommended",
-    "rules": {
-        "max-line-length": {
-            "options": [120]
-        }
-    }
-}
+// {
+//     "extends": "tslint:recommended",
+//     "rules": {
+//         "max-line-length": {
+//             "options": [120]
+//         }
+//     }
+// }

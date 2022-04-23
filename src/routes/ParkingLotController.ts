@@ -1,10 +1,11 @@
-import { JsonController, Param, Body, Get, Post, Put, Patch, BodyParam } from 'routing-controllers';
-import { ParkingSize } from '../entities/ParkingLot';
+import { JsonController, Param, Body, Get, Post, Put, Patch, BodyParam, HttpCode } from 'routing-controllers';
+import { ParkingSize } from '../type/ParkingLot';
 import { ParkingLotService } from '../services/ParkingLotService';
 import { Container } from "typedi"
 
 @JsonController("/parkinglot")
 export class ParkingLotController {
+    @HttpCode(202)
     @Post("/")
     public async createParkingLot(
         @BodyParam("slot") slot: number,
@@ -35,7 +36,7 @@ export class ParkingLotController {
         return parkingLotsService.getParkingLotStatusById(id);
     }
 
-    @Get("slot/:size")
+    @Get("/slot/:size")
     public async getSlotNumberByCarSize(
         @Param("size") size: ParkingSize
     ) {

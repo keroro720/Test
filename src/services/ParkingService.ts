@@ -1,8 +1,7 @@
 import * as _ from "lodash";
-import { IParkingLot, ParkingSize } from "../entities/ParkingLot";
+import { IParkingLot, ParkingSize } from "../type/ParkingLot";
 import { Service, Inject } from "typedi"
 import { CarService } from "./CarService";
-import { mappingSize } from "../util/helper";
 import { ParkingLogsService } from "./ParkingLogsService";
 import { ParkingLotRepository } from "../repositories/ParkingLotRepository";
 
@@ -25,26 +24,39 @@ export class ParkingService {
         plate_id: string,
         size: ParkingSize
     ) {
-        const isDuplicate = await this._parkingLotRepository.getParkingLotByCarId(plate_id)
-        if (isDuplicate) {
-            throw {
-                status: 409,
-                message: "Your car is parking right now."
+        try {
+            const isDuplicate = await this._parkingLotRepository.getParkingLotByCarId(plate_id)
+            if (!_.isUndefined(isDuplicate)) {
+                throw {
+                    status: 409,
+                    message: "Your car is parking right now."
+                }
             }
-        }
-        await this._carService?.registerCar(plate_id, size);
-        const sizeNumber = mappingSize(size)
-        const nearestParkingLot = await this._parkingLotRepository.getNearestAvailableParkinglotBySize(sizeNumber)
-        console.log(nearestParkingLot)
-        if (!_.isUndefined(nearestParkingLot)) {
+            await this._carService?.registerCar(plate_id, size);
+            const nearestParkingLot = await this._parkingLotRepository.getNearestAvailableParkinglotBySize(size)
+            if (!_.isUndefined(nearestParkingLot)) {
 
-        await this._parkingLotRepository.parkingCarById(nearestParkingLot.parkinglot_id, plate_id)
-        await this._parkingLogsService?.addEnteringLog(nearestParkingLot.parkinglot_id, plate_id)
-        return `Your parking lot is ${nearestParkingLot.parkinglot_id}`
-    } else {
-            throw {
-                status: 400,
-                message: "No parking slot available"
+            await this._parkingLotRepository.parkingCarById(nearestParkingLot.slot_id, plate_id)
+            await this._parkingLogsService?.addEnteringLog(nearestParkingLot.slot_id, plate_id)
+            return `Your parking lot is ${nearestParkingLot.slot_id}`
+        } else {
+                throw {
+                    status: 400,
+                    message: "No parking slot available"
+                }
+            }
+        } catch(error) {
+            console.log("Parking a car error: ", error)
+            if (error.status === 400 || error.status === 409) {
+                throw {
+                    status: error.status,
+                    message: error.message
+                }
+            } else {
+                throw {
+                    status: 500,
+                    message: "Internal server error"
+                }
             }
         }
     }
@@ -52,16 +64,30 @@ export class ParkingService {
     public async leavingALot(
         plate_id: string
     ) {
-        const parkinglotByCarId =  await this._parkingLotRepository.getParkingLotByCarId(plate_id)
-        if (!parkinglotByCarId) {
-            throw {
-                status: 404,
-                message: `No car with ${plate_id} is parking`
+        try {
+            const parkinglotByCarId =  await this._parkingLotRepository.getParkingLotByCarId(plate_id)
+            if (!parkinglotByCarId) {
+                throw {
+                    status: 404,
+                    message: `No car with ${plate_id} is parking`
+                }
+            } else {
+                await this._parkingLotRepository.emptySlotByCarId(plate_id)
+                await this._parkingLogsService?.addLeavingTime(plate_id, parkinglotByCarId.slot_id);
+                return `${plate_id} is leaving`
             }
-        } else {
-            await this._parkingLotRepository.emptyCarByCarId(plate_id)
-            await this._parkingLogsService?.addLeavingTime(plate_id, parkinglotByCarId.parkinglot_id);
-            return `${plate_id} is leaving`
+        } catch(error) {
+            if (error.status === 404) {
+                throw {
+                    status: error.status,
+                    message: error.message
+                }
+            } else {
+                throw {
+                    status: 500,
+                    message: "Internal server error"
+                }
+            }
         }
     }
 }

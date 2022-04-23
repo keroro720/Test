@@ -1,7 +1,8 @@
-import { ICar } from "../../entities/Car";
+import { ParkingSize } from "src/type/ParkingLot";
+import { ICar } from "../../type/Car";
 
 export interface ICarRepository {
-    getCarsBySize: (size: number) => Promise<ICar[]>
+    getCarsBySize: (size: ParkingSize) => Promise<ICar[]>
     getAll: () => Promise<ICar[]>
     addCar: (data: ICar) => Promise<void>;
     getCarById: (plate_id: string) => Promise<ICar>;
