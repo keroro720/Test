@@ -1,8 +1,8 @@
-import * as DotEnv from "dotenv"
+import * as DotEnv from "dotenv";
 
 DotEnv.config();
 
-module.exports = {
+const knexConfig = {
     client: process.env.DATABASE_DRIVER,
     connection: {
         host: process.env.DATABASE_HOST,
@@ -15,4 +15,6 @@ module.exports = {
         directory: "./migrations/",
         tableName: 'knex_migrations'
       },
-}
+};
+
+module.exports = knexConfig;

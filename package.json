@@ -38,7 +38,7 @@
   "scripts": {
     "lint": "tslint ./**/*.ts",
     "build": "tsc -p .",
-    "dev": "ts-node-dev --respawn src/index.ts",
-    "test": "mocha -r tsconfig-paths/register -r ts-node/register \"test/unit/services/**/*.Spec.ts\""
+    "test": "mocha -r tsconfig-paths/register -r ts-node/register \"test/unit/services/**/*.Spec.ts\"",
+    "dev": "nodemon src/index.ts"
   }
 }

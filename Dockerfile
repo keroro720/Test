@@ -1,5 +1,17 @@
-FROM node:fermium
+FROM node:14 as base
+
 WORKDIR /app
-COPY . .
+
+
+COPY package.json ./
+
 RUN yarn
-CMD node dist/src/index.ts
+
+COPY . .
+
+RUN yarn build
+
+FROM base
+
+
+COPY knexfile.docker.ts knexfile.ts
