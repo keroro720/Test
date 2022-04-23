@@ -8,9 +8,9 @@
 
 ## Folder Structure
 under folder ```/src```
-- folder controller: hold endpoint of the app
-- folder service: hold bussiness logic of the app
-- folder repository: hold data source
+- folder routes: hold endpoint of the app
+- folder services: hold bussiness logic of the app
+- folder repositories: hold data source
 - folder unit: hold app unit test
 
 ## Preaparation
