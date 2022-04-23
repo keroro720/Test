@@ -42,14 +42,5 @@ export const ParkingCarTest = () => {
                 ParkingSize.MEDIUM
             ).should.rejected
         }
-
-        // @test("can't register a car: same plate_id but differ size")
-        // public async canNotRegisterCarDifferSize() {
-        //     const carService = Container.get(CarService);
-        //     await carService.registerCar(
-        //         "AU123",
-        //         ParkingSize.SMALL
-        //     ).should.rejected
-        // }
     }
 }
