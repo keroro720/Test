@@ -2,16 +2,17 @@ import { JsonController, Param, Body, Get, Post, Put, Patch, BodyParam, HttpCode
 import { ParkingSize } from '../type/ParkingLot';
 import { ParkingLotService } from '../services/ParkingLotService';
 import { Container } from "typedi";
+import { CreateParkingLotRequest } from '../request/CreateParkingLotRequest';
 
 @JsonController("/parkinglot")
 export class ParkingLotController {
     @HttpCode(202)
     @Post("/")
     public async createParkingLot(
-        @BodyParam("slot") slot: number,
+        @Body() createLotRequest: CreateParkingLotRequest,
     ) {
         const parkingLotsService = Container.get(ParkingLotService);
-        return parkingLotsService.createParkingLot(slot);
+        return parkingLotsService.createParkingLot(createLotRequest.slot);
     }
 
     @Get("/")
